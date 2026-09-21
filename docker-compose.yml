@@ -1,0 +1,62 @@
+services:
+  mysql:
+    image: mysql:8.4
+    command: --default-authentication-plugin=caching_sha2_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: webhook_engine
+      MYSQL_USER: webhook
+      MYSQL_PASSWORD: webhook
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-uroot', '-proot']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  server:
+    build:
+      context: ./apps/server
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:3000
+      DB_DRIVER: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: webhook
+      DB_PASSWORD: webhook
+      DB_NAME: webhook_engine
+      DB_SYNCHRONIZE: 'false'
+      WEBHOOK_TARGET_URL: http://localhost:3001/test-receiver/webhook
+      WEBHOOK_TIMEOUT_MS: 5000
+      MAX_ATTEMPTS: 3
+      # Short backoff so retries are watchable during a demo.
+      RETRY_DELAY_1_MS: 15000
+      RETRY_DELAY_2_MS: 30000
+      WORKER_ENABLED: 'true'
+      WORKER_POLL_INTERVAL_MS: 1000
+      WORKER_LEASE_TIMEOUT_MS: 60000
+    # The schema is applied by migrations, never by synchronize.
+    command: sh -c "npx typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts && node dist/main.js"
+    ports:
+      - '3001:3001'
+
+  client:
+    build:
+      context: ./apps/client
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3001
+    depends_on:
+      - server
+    ports:
+      - '3000:3000'
+
+volumes:
+  mysql-data:

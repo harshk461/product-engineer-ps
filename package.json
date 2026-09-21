@@ -1,0 +1,17 @@
+{
+  "name": "webhook-retry-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Caygnus Webhook Retry Engine - reliable webhook delivery with idempotent ingestion, persistent scheduling, bounded retries and real-time observability",
+  "scripts": {
+    "install:all": "npm --prefix apps/server install && npm --prefix apps/client install",
+    "dev": "npm run dev:server & npm run dev:client & wait",
+    "dev:server": "npm --prefix apps/server run start:dev",
+    "dev:client": "npm --prefix apps/client run dev",
+    "build": "npm --prefix apps/server run build && npm --prefix apps/client run build",
+    "test": "npm --prefix apps/server test",
+    "migration:run": "npm --prefix apps/server run migration:run",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down -v"
+  }
+}

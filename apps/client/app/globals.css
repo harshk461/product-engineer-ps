@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Light and dark are two selected palettes drawn from the same ramps, each
+ * validated against its own surface. The dark values are declared twice: once
+ * for the OS setting and once for the in-app toggle, which must win either way.
+ */
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface-1: #fcfcfb;
+  --surface-2: #f2f2ee;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --hairline: rgba(11, 11, 11, 0.1);
+  --gridline: #e1e0d9;
+
+  /* Status palette - reserved roles, never reused as series colours. */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+  --series-1: #2a78d6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface-1: #1a1a19;
+    --surface-2: #232321;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --hairline: rgba(255, 255, 255, 0.1);
+    --gridline: #2c2c2a;
+    --series-1: #3987e5;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --page: #0d0d0d;
+  --surface-1: #1a1a19;
+  --surface-2: #232321;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+  --hairline: rgba(255, 255, 255, 0.1);
+  --gridline: #2c2c2a;
+  --series-1: #3987e5;
+}
+
+body {
+  background: var(--page);
+  color: var(--text-primary);
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-hairline bg-surface;
+  }
+
+  .card-header {
+    @apply flex items-center justify-between gap-3 border-b border-hairline px-4 py-3;
+  }
+
+  .card-title {
+    @apply text-sm font-semibold tracking-tight text-ink;
+  }
+
+  .label {
+    @apply text-xs font-medium uppercase tracking-wide text-muted;
+  }
+
+  /* Status marks always pair colour with an icon and a written label, so the
+     colour is never the only carrier of meaning. */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-semibold;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-hairline bg-raised px-3 py-2 text-sm text-ink
+           outline-none placeholder:text-muted focus:border-info focus:ring-1 focus:ring-info;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold
+           transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-info text-white hover:opacity-90;
+  }
+
+  .btn-ghost {
+    @apply btn border border-hairline bg-raised text-ink hover:border-info;
+  }
+}
